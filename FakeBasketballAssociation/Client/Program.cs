@@ -37,6 +37,7 @@ namespace FakeBasketballAssociation.Client
             // new
             services.AddOptions();
             services.AddScoped<IPlayerRepository, PlayerRepository>();
+            services.AddScoped<IVoteRepository, VoteRepository>();
         }
     }
 }

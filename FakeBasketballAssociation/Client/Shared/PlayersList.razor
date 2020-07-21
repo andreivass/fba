@@ -1,25 +1,44 @@
-﻿<div >
-    @if (PlayersAll == null)
-    {
-        <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" />
-    }
-    else if (PlayersAll.Count == 0)
-    {
-        <p>Sorry no data at the monent. Come back later.</p>
-    }
-    else
-    {
-        foreach (var item in PlayersAll)
+﻿@inject FakeBasketballAssociation.Client.Repository.IVoteRepository votesRepo
+
+@if (PlayersAll == null)
+{
+    <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" />
+}
+else if (PlayersAll.Count == 0)
+{
+    <p>Sorry no data at the monent. Come back later.</p>
+}
+else
+{
+    @*foreach (var item in PlayersAll)
+        {<div class="row">
+                <PlayerIndividual PlayerOne="@item"> </PlayerIndividual>
+            </div>
+        }*@
+    <div class="row row-cols-1 row-cols-md-3">
+
+        @foreach (var item in PlayersAll)
         {
-            <div class="card" style="margin-bottom: 12px;">
+            <div class="col mb-4">
                 <PlayerIndividual PlayerOne="@item"> </PlayerIndividual>
             </div>
         }
-    }
-</div>
+    </div>
+}
 
 
 @code {
     [Parameter] public List<PlayerDTO> PlayersAll { get; set; }
-    //public Player Player { get; set; }
+    private List<Vote> Votes;
+
+    @*protected async override Task OnInitializedAsync()
+    {
+
+        
+    }*@
+
+    private async Task VotePlayer(PlayerDTO Player)
+    {
+        // create vote
+    }
 }

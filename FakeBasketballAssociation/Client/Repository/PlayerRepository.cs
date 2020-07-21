@@ -41,11 +41,11 @@ namespace FakeBasketballAssociation.Client.Repository
         }
 
         // populate nba player name by nbaId from nba bio API 
-        public async Task<PlayerDTO> GetNbaPlayer(string id)
+        public async Task<PlayerDTO> GetNbaPlayer(string NbaId, int playerId)
         {
             using (var http = new HttpClient())
             {
-                var uri = new Uri(nbaNameApiURL + id + ".json");
+                var uri = new Uri(nbaNameApiURL + NbaId + ".json");
                 string json = await http.GetStringAsync(uri);
                 var playerProfileBio = JsonConvert.DeserializeObject<PlayerBioDTO>(json);
 
@@ -59,7 +59,8 @@ namespace FakeBasketballAssociation.Client.Repository
                     Spg = "unavailable",
                     Apg = "unavailable",
                     Fgp = "unavailable",
-                    NbaId = id
+                    NbaId = NbaId,
+                    PlayerId = playerId
                 };
                 return playerDTO;
             }
@@ -78,7 +79,7 @@ namespace FakeBasketballAssociation.Client.Repository
                 // add name + stats
                 foreach (var item in players)
                 {
-                    var bioDto = await GetNbaPlayer(item.NbaId);
+                    var bioDto = await GetNbaPlayer(item.NbaId, item.PlayerId);
                     var statsDto = await GetNbaPlayerStats(bioDto);
                     dtoList.Add(statsDto);
                 }

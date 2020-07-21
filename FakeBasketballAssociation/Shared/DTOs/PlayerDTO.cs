@@ -18,5 +18,7 @@ namespace FakeBasketballAssociation.Shared.DTOs
         public string Apg { get; set; }
         public string Fgp { get; set; }
         public string NbaId { get; set; }
+        public int VotesTemp { get; set; }
+        public int PlayerId { get; set; }
     }
 }

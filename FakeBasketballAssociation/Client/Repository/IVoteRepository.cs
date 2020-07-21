@@ -8,6 +8,6 @@ namespace FakeBasketballAssociation.Client.Repository
 {
     public interface IVoteRepository
     {
-        List<Vote> GetVotes();
+        Task<List<Vote>> GetVotes();
     }
 }
