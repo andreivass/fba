@@ -1,0 +1,34 @@
+﻿@inject FakeBasketballAssociation.Client.Repository.IPlayerRepository playersRepo
+
+
+    <div class="card-header">
+        @PlayerOne.FirstName @PlayerOne.LastName
+
+    </div>
+    <div class="card-body">
+        <p class="card-text">PPG - @PlayerOne.Ppg</p>
+        <p class="card-text">RPG - @PlayerOne.Rpg</p>
+        <p class="card-text">APG - @PlayerOne.Apg</p>
+        <p class="card-text">BPG - @PlayerOne.Bpg</p>
+        <p class="card-text">SPG - @PlayerOne.Spg</p>
+        <p class="card-text">Fgp - @PlayerOne.Fgp %</p>
+
+        <a class="btn btn-primary" href="/JobTasks/Details/11111111-1110-0000-0000-000000000001">Details</a>
+        <a class="btn btn-primary" href="/JobTasks/Edit/11111111-1110-0000-0000-000000000001">Edit</a>
+        <a class="btn btn-primary" href="/JobTasks/Delete/11111111-1110-0000-0000-000000000001">Delete</a>
+
+    </div>
+
+
+
+
+@code {
+    [Parameter] public PlayerDTO PlayerOne { get; set; }
+    private PlayerDTO PlayerOneDTO { get; set; }
+
+    @*protected async override Task OnInitializedAsync()
+    {
+        PlayerOneDTO = await playersRepo.GetNbaPlayer(PlayerOne.NbaId);
+        Console.WriteLine(PlayerOneDTO.FirstName);
+    }*@
+}
