@@ -9,6 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using FakeBasketballAssociation.Client.Repository;
+using Microsoft.AspNetCore.Components.Authorization;
+using FakeBasketballAssociation.Client.Auth;
+using FakeBasketballAssociation.Client.Helpers;
 
 namespace FakeBasketballAssociation.Client
 {
@@ -19,10 +22,7 @@ namespace FakeBasketballAssociation.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
-            builder.Services.AddHttpClient("FakeBasketballAssociation.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
-                .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
-
-            
+            builder.Services.AddSingleton(new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             ConfigureServices(builder.Services);
 
@@ -30,16 +30,25 @@ namespace FakeBasketballAssociation.Client
         }
         private static void ConfigureServices(IServiceCollection services)
         {
-            // Supply HttpClient instances that include access tokens when making requests to the server project
-            services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("FakeBasketballAssociation.ServerAPI"));
-            services.AddApiAuthorization();
-
-            // new
             services.AddOptions();
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddScoped<IVoteRepository, VoteRepository>();
+            services.AddScoped<IHttpService, HttpService>();
+            services.AddScoped<IAccountsRepository, AccountsRepository>();
+            services.AddScoped<IDisplayMessage, DisplayMessage>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
 
             services.AddAuthorizationCore();
+
+            services.AddScoped<JWTAuthenticationStateProvider>();
+            services.AddScoped<AuthenticationStateProvider, JWTAuthenticationStateProvider>(
+                provider => provider.GetRequiredService<JWTAuthenticationStateProvider>()
+            );
+            services.AddScoped<ILoginService, JWTAuthenticationStateProvider>(
+               provider => provider.GetRequiredService<JWTAuthenticationStateProvider>()
+            );
+
+            services.AddScoped<TokenRenewer>();
         }
     }
 }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using FakeBasketballAssociation.Server.Data;
 using FakeBasketballAssociation.Shared.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,12 +43,10 @@ namespace FakeBasketballAssociation.Server.Controllers
 
         //api/votes
         [HttpPost]
-        //[ValidateAntiForgeryToken]
         [ProducesResponseType(201, Type = typeof(Vote))]
         [Produces("application/json")]
         [Consumes("application/json")]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(404)]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public IActionResult PostVote([FromBody] Vote voteToCreate)
         {
             if (voteToCreate == null)
@@ -58,7 +58,6 @@ namespace FakeBasketballAssociation.Server.Controllers
             _context.Votes.Add(voteToCreate);
             _context.SaveChanges();
 
-            //return CreatedAtRoute("GetVote", new { voteId = voteToCreate.VoteId }, voteToCreate);
             return Ok(voteToCreate);
         }
     }

@@ -14,6 +14,10 @@ using System.Linq;
 using FakeBasketballAssociation.Server.Data;
 using FakeBasketballAssociation.Shared.Entities;
 using FakeBasketballAssociation.Server.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System;
 
 namespace FakeBasketballAssociation.Server
 {
@@ -34,20 +38,26 @@ namespace FakeBasketballAssociation.Server
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-            //services.AddScoped<IPlayerRepository, PlayerRepository>();
-            //services.AddScoped<IVoteRepository, VoteRepository>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(Configuration["jwt:key"])),
+                    ClockSkew = TimeSpan.Zero
+                });
 
         }
 
@@ -73,8 +83,6 @@ namespace FakeBasketballAssociation.Server
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
 

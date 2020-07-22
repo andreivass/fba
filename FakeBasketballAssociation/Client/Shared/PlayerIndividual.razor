@@ -15,12 +15,16 @@
             <p class="card-text">Votes - @PlayerOne.VotesTemp</p>
             <AuthorizeView>
                 <Authorized>
+                    
                     <a class="btn btn-primary" href="" @onclick="@(() => VotePlayer.InvokeAsync(PlayerOne))">Vote</a>
                 </Authorized>
+                <NotAuthorized>
+                    Log in to vote
+                </NotAuthorized>
             </AuthorizeView>
             
 
-            <AuthorizeView Roles="user">
+            <AuthorizeView Roles="Admin">
                 <Authorized>
                     <a class="btn btn-danger" href="">Delete</a>
                 </Authorized>

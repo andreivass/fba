@@ -6,7 +6,7 @@
 
 <div class="main">
     <div class="top-row px-4 auth">
-        <LoginDisplay />
+        <LoginLinks />
         <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
     </div>
 
@@ -15,3 +15,6 @@
     </div>
 </div>
 
+@code { 
+    [CascadingParameter] public Task<AuthenticationState> AuthenticationState { get; set; } 
+}

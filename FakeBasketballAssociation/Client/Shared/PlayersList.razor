@@ -11,6 +11,7 @@ else if (PlayersAll.Count == 0)
 }
 else
 {
+    
     <div class="row row-cols-1 row-cols-md-3">
 
         @foreach (var item in PlayersAll)
@@ -24,6 +25,7 @@ else
 
 
 @code {
+    [CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; }
     [Parameter] public List<PlayerDTO> PlayersAll { get; set; }
     private List<Vote> Votes;
 
@@ -31,21 +33,21 @@ else
     private async Task VotePlayer(PlayerDTO Player)
     {
         Console.WriteLine("Am i here?");
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        @*var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         var newVote = new Vote()
         {
             PlayerId = Player.PlayerId,
             ApplicationUserId = new Guid(user.Identity.GetUserId())
-        };
+        };*@
 
     }
 
-    protected override async Task OnInitializedAsync()
+    @*protected override async Task OnInitializedAsync()
     {
-        //var userName = System.Web.HttpContext.Current.User.Identity.Name;
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await AuthenticationState;
         var user = authState.User;
         Console.WriteLine("----------------userId: ", user.Identity.GetUserId());
-    }
+        Console.WriteLine("----------------userName: ", user.Identity.GetUserName());
+    }*@
 }

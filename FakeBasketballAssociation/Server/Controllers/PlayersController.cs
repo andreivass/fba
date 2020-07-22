@@ -4,13 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using FakeBasketballAssociation.Server.Data;
 using FakeBasketballAssociation.Shared.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.HttpSys;
 
 namespace FakeBasketballAssociation.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class PlayersController : Controller
     {
         private ApplicationDbContext _context;
@@ -43,6 +47,7 @@ namespace FakeBasketballAssociation.Server.Controllers
         [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(201, Type = typeof(Player))]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public IActionResult PostPlayer([FromBody] Player player)
         {
             if (player == null)
