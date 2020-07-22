@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeBasketballAssociation.Server.Data;
+using FakeBasketballAssociation.Shared.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,80 +19,45 @@ namespace FakeBasketballAssociation.Server.Controllers
             _context = context;
         }
 
-        // GET: PlayersController
+        //api/players
         [HttpGet]
         public IActionResult GetPlayers()
         {
             return Ok(_context.Players);
         }
 
-        // GET: PlayersController/Details/5
-        public ActionResult Details(int id)
+        //api/players/5
+        [HttpGet("{id}")]
+        public ActionResult GetPlayer(int id)
         {
-            return View();
+            var player = _context.Players.Find(id);
+            if (player == null)
+            {
+                return NotFound();
+            }
+            return Ok(player);
         }
 
-        // GET: PlayersController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: PlayersController/Create
+        //api/players
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [ProducesResponseType(201, Type = typeof(Player))]
+        public IActionResult PostPlayer([FromBody] Player player)
         {
-            try
+            if (player == null)
+                return BadRequest(ModelState);
+            if (_context.Players.Any(p => p.NbaId.Equals(player.NbaId))){
+                ModelState.AddModelError("", $"Player with nbaId {player.NbaId} already exists");
+                return StatusCode(422, ModelState);
+            } else
             {
-                return RedirectToAction(nameof(Index));
+                _context.Players.Add(player);
+                _context.SaveChanges();
             }
-            catch
-            {
-                return View();
-            }
+
+            return Ok(player);
         }
 
-        // GET: PlayersController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: PlayersController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: PlayersController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: PlayersController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

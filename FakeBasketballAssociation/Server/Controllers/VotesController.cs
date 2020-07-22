@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeBasketballAssociation.Server.Data;
+using FakeBasketballAssociation.Shared.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,81 +20,46 @@ namespace FakeBasketballAssociation.Server.Controllers
             _context = context;
         }
 
-        // GET: VotesController
+        //api/votes
         [HttpGet]
         public ActionResult Index()
         {
             return Ok(_context.Votes);
-            //return Ok(_voteRepository.GetVotes());
         }
 
-        // GET: VotesController/Details/5
-        public ActionResult Details(int id)
+        //api/votes/5
+        [HttpGet("{id}")]
+        public ActionResult GetVote(int id)
         {
-            return View();
+            var vote = _context.Votes.Find(id);
+            if (vote == null)
+            {
+                return NotFound();
+            }
+            return Ok(vote);
         }
 
-        // GET: VotesController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: VotesController/Create
+        //api/votes
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        //[ValidateAntiForgeryToken]
+        [ProducesResponseType(201, Type = typeof(Vote))]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(404)]
+        public IActionResult PostVote([FromBody] Vote voteToCreate)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+            if (voteToCreate == null)
+                return BadRequest(ModelState);
 
-        // GET: VotesController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+            if (!ModelState.IsValid)
+                return StatusCode(404, ModelState);
 
-        // POST: VotesController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+            _context.Votes.Add(voteToCreate);
+            _context.SaveChanges();
 
-        // GET: VotesController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: VotesController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            //return CreatedAtRoute("GetVote", new { voteId = voteToCreate.VoteId }, voteToCreate);
+            return Ok(voteToCreate);
         }
     }
 }

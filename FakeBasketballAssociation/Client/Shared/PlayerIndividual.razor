@@ -15,10 +15,11 @@
             <p class="card-text">Votes - @PlayerOne.VotesTemp</p>
             <AuthorizeView>
                 <Authorized>
-                    <a class="btn btn-primary" href="">Vote</a>
+                    <a class="btn btn-primary" href="" @onclick="@(() => VotePlayer.InvokeAsync(PlayerOne))">Vote</a>
                 </Authorized>
             </AuthorizeView>
             
+
             <AuthorizeView Roles="user">
                 <Authorized>
                     <a class="btn btn-danger" href="">Delete</a>
@@ -33,6 +34,8 @@
     [Parameter] public PlayerDTO PlayerOne { get; set; }
     //private PlayerDTO PlayerOneDTO { get; set; }
     [Parameter] public EventCallback<PlayerDTO> VotePlayer { get; set; }
+
+    // TODO: fix VotePlayer or auth? Possible also to move here, but at least 1 EventCallback?
 
     private string imgURL = string.Empty;
 

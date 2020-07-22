@@ -1,4 +1,5 @@
 ﻿@inject FakeBasketballAssociation.Client.Repository.IVoteRepository votesRepo
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if (PlayersAll == null)
 {
@@ -10,11 +11,6 @@ else if (PlayersAll.Count == 0)
 }
 else
 {
-    @*foreach (var item in PlayersAll)
-        {<div class="row">
-                <PlayerIndividual PlayerOne="@item"> </PlayerIndividual>
-            </div>
-        }*@
     <div class="row row-cols-1 row-cols-md-3">
 
         @foreach (var item in PlayersAll)
@@ -31,14 +27,25 @@ else
     [Parameter] public List<PlayerDTO> PlayersAll { get; set; }
     private List<Vote> Votes;
 
-    @*protected async override Task OnInitializedAsync()
-    {
-
-        
-    }*@
 
     private async Task VotePlayer(PlayerDTO Player)
     {
-        // create vote
+        Console.WriteLine("Am i here?");
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var newVote = new Vote()
+        {
+            PlayerId = Player.PlayerId,
+            ApplicationUserId = new Guid(user.Identity.GetUserId())
+        };
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //var userName = System.Web.HttpContext.Current.User.Identity.Name;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Console.WriteLine("----------------userId: ", user.Identity.GetUserId());
     }
 }

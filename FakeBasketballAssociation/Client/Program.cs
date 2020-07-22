@@ -38,6 +38,8 @@ namespace FakeBasketballAssociation.Client
             services.AddOptions();
             services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddScoped<IVoteRepository, VoteRepository>();
+
+            services.AddAuthorizationCore();
         }
     }
 }
