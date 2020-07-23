@@ -1,0 +1,30 @@
+﻿@page "/createplayer"
+@inject FakeBasketballAssociation.Client.Repository.IPlayerRepository playersRepo
+@inject NavigationManager navigationManager
+
+<h3>Add Player to voting</h3>
+
+<EditForm Model="PlayerNew" OnValidSubmit="AddPlayer">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>NbaId:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@PlayerNew.NbaId" />
+            <ValidationMessage For="@(() => PlayerNew.NbaId)" />
+        </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Add player</button>
+</EditForm>
+
+@code {
+    //public string NbaId { get; set; }
+    private PlayerCreateDTO PlayerNew { get; set; } = new PlayerCreateDTO();
+
+    private async Task AddPlayer()
+    {
+        await playersRepo.CreatePlayer(PlayerNew);
+        navigationManager.NavigateTo("/index");
+    }
+
+}

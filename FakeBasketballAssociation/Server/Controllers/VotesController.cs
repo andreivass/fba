@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FakeBasketballAssociation.Server.Data;
 using FakeBasketballAssociation.Shared.Entities;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -54,6 +55,9 @@ namespace FakeBasketballAssociation.Server.Controllers
 
             if (!ModelState.IsValid)
                 return StatusCode(404, ModelState);
+
+            var userId = User.Identity.GetUserId();
+            voteToCreate.ApplicationUserId = new Guid(userId);
 
             _context.Votes.Add(voteToCreate);
             _context.SaveChanges();

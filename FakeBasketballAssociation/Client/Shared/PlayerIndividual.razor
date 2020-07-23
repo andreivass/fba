@@ -16,7 +16,7 @@
             <AuthorizeView>
                 <Authorized>
                     
-                    <a class="btn btn-primary" href="" @onclick="@(() => VotePlayer.InvokeAsync(PlayerOne))">Vote</a>
+                    <button disabled="@VoteLocked" class="btn btn-primary" href="" @onclick="@(() => VotePlayer.InvokeAsync(PlayerOne))">Vote</button>
                 </Authorized>
                 <NotAuthorized>
                     Log in to vote
@@ -26,7 +26,7 @@
 
             <AuthorizeView Roles="Admin">
                 <Authorized>
-                    <a class="btn btn-danger" href="">Delete</a>
+                    <button class="btn btn-danger" href="" @onclick="@(() => DeletePlayer.InvokeAsync(PlayerOne))">Delete</button>
                 </Authorized>
             </AuthorizeView>
         </div>
@@ -36,8 +36,10 @@
 
 @code {
     [Parameter] public PlayerDTO PlayerOne { get; set; }
+    [Parameter] public bool VoteLocked { get; set; }
     //private PlayerDTO PlayerOneDTO { get; set; }
     [Parameter] public EventCallback<PlayerDTO> VotePlayer { get; set; }
+    [Parameter] public EventCallback<PlayerDTO> DeletePlayer { get; set; }
 
     // TODO: fix VotePlayer or auth? Possible also to move here, but at least 1 EventCallback?
 

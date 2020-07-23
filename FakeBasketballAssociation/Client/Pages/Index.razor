@@ -1,16 +1,16 @@
 ﻿@page "/"
+@page "/index"
 @inject FakeBasketballAssociation.Client.Repository.IPlayerRepository playersRepo
 @inject FakeBasketballAssociation.Client.Repository.IVoteRepository votesRepo
 @using FakeBasketballAssociation.Shared.Entities
 
 <h2>Welcome to the FBA - the Fake Basketball Association</h2>
 
-<h4>MVP voting to begin soon</h4>
+<h4>Choose wisely, only one vote for you!</h4>
 
 <div class="container">
     <PlayersList PlayersAll="@SortedPlayerDTOs" />
 </div>
-
 
 @code{
 

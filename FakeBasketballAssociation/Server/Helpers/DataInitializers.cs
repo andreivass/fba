@@ -51,7 +51,7 @@ namespace FakeBasketballAssociation.Server.Helpers
             }
             context.SaveChanges();
 
-
+            // random guid for sample votes
             var sampleVotes = new Vote[]
             {
                 new Vote

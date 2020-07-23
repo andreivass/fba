@@ -10,5 +10,7 @@ namespace FakeBasketballAssociation.Client.Repository
     public interface IPlayerRepository
     {
         Task<List<PlayerDTO>> GetNbaPlayers();
+        Task CreatePlayer(PlayerCreateDTO player);
+        Task DeletePlayer(PlayerDTO player);
     }
 }

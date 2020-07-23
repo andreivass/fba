@@ -1,5 +1,8 @@
 ﻿@inject FakeBasketballAssociation.Client.Repository.IVoteRepository votesRepo
+@inject FakeBasketballAssociation.Client.Repository.IPlayerRepository playersRepo
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDisplayMessage displayMessage
+@inject NavigationManager navigationManager
 
 @if (PlayersAll == null)
 {
@@ -11,13 +14,17 @@ else if (PlayersAll.Count == 0)
 }
 else
 {
-    
+
     <div class="row row-cols-1 row-cols-md-3">
 
         @foreach (var item in PlayersAll)
         {
             <div class="col mb-4">
-                <PlayerIndividual PlayerOne="@item"> </PlayerIndividual>
+                <PlayerIndividual VotePlayer="VotePlayer"
+                                  PlayerOne="@item"
+                                  VoteLocked="@VoteLocked"
+                                  DeletePlayer="@DeletePlayer">
+                </PlayerIndividual>
             </div>
         }
     </div>
@@ -28,26 +35,41 @@ else
     [CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; }
     [Parameter] public List<PlayerDTO> PlayersAll { get; set; }
     private List<Vote> Votes;
+    public bool VoteLocked { get; set; } = false;
 
 
     private async Task VotePlayer(PlayerDTO Player)
     {
-        Console.WriteLine("Am i here?");
-        @*var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
         var newVote = new Vote()
         {
             PlayerId = Player.PlayerId,
-            ApplicationUserId = new Guid(user.Identity.GetUserId())
-        };*@
+            // dummy id, backend will replace with correct
+            ApplicationUserId = new Guid("ace8d4da-aa66-4000-a508-59ceda17573b")
+        };
+        await votesRepo.PostVote(newVote);
+        await displayMessage.DisplaySuccessMessage("Vote posted!");
+        Player.VotesTemp++;
+        VoteLocked = true;
+    }
+
+    private async Task DeletePlayer(PlayerDTO Player)
+    {
+        if (Player.VotesTemp > 0)
+        {
+            await displayMessage.DisplayErrorMessage($"Sorry, cannot delete {Player.FirstName} if he has {Player.VotesTemp} votes already.");
+        }
+        else
+        {
+            await playersRepo.DeletePlayer(Player);
+            await displayMessage.DisplaySuccessMessage($"Too bad you didn´t like {Player.FirstName}, he´s gone from the list.");
+            //navigationManager.NavigateTo("/index");
+            RemovePlayerFromList(Player);
+        }
 
     }
 
-    @*protected override async Task OnInitializedAsync()
+    private void RemovePlayerFromList(PlayerDTO Player)
     {
-        var authState = await AuthenticationState;
-        var user = authState.User;
-        Console.WriteLine("----------------userId: ", user.Identity.GetUserId());
-        Console.WriteLine("----------------userName: ", user.Identity.GetUserName());
-    }*@
+        PlayersAll.Remove(Player);
+    }
 }

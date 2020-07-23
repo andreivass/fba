@@ -27,9 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Player\" />
     <Folder Include="Pages\Vote\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

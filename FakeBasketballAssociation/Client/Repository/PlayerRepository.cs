@@ -6,16 +6,23 @@ using FakeBasketballAssociation.Shared.Entities;
 using System.Net.Http;
 using Newtonsoft.Json;
 using FakeBasketballAssociation.Shared.DTOs;
+using FakeBasketballAssociation.Client.Helpers;
+using System.Text;
 
 namespace FakeBasketballAssociation.Client.Repository
 {
-
     public class PlayerRepository : IPlayerRepository
     {
+        private readonly IHttpService httpService;
+        private readonly string url = "api/players";
+
         private readonly string localApiURL = "https://localhost:44359/";
         private readonly string nbaNameApiURL = "https://data.nba.net/json/bios/player_";
         private readonly string nbaStatsApiURL = "https://data.nba.net/10s/prod/v1/2019/players/";
-
+        public PlayerRepository(IHttpService httpServ)
+        {
+            this.httpService = httpServ;
+        }
         // populate nba player stats by nbaId from nba stats API
         public async Task<PlayerDTO> GetNbaPlayerStats(PlayerDTO player)
         {
@@ -23,10 +30,15 @@ namespace FakeBasketballAssociation.Client.Repository
             {
                 var uri = new Uri(nbaStatsApiURL + player.NbaId + "_profile.json");
                 string json = await http.GetStringAsync(uri);
-                // do some bad magic string stuff, fix later if time left
-                var statsJsonIncomplete = json.Split("latest")[1].Split("careerSummary")[0].Substring(2);
-                var statsJson = statsJsonIncomplete.Remove(statsJsonIncomplete.Length -2);
 
+                // before API change/break
+                //var statsJsonIncomplete = json.Split("latest")[1].Split("careerSummary")[0].Substring(2);
+                //var statsJson = statsJsonIncomplete.Remove(statsJsonIncomplete.Length -2);
+
+                // do some bad magic string stuff, fix later if time left
+                var statsJsonIncomplete = json.Split("teams")[1].Split("total")[0].Substring(3);
+                var statsJson = statsJsonIncomplete.Remove(statsJsonIncomplete.Length -3);
+                
                 var playerStats = JsonConvert.DeserializeObject<PlayerStatsDTO>(statsJson);
 
                 player.Ppg = playerStats.ppg;
@@ -72,10 +84,8 @@ namespace FakeBasketballAssociation.Client.Repository
             var dtoList = new List<PlayerDTO>();
             using (var http = new HttpClient())
             {
-                // get player nbaId-s from DB
-                var uri = new Uri(localApiURL + "api/players");
-                string json = await http.GetStringAsync(uri);
-                var players = JsonConvert.DeserializeObject<List<Player>>(json);
+                var players = await GetPlayers();
+
                 // add name + stats
                 foreach (var item in players)
                 {
@@ -87,7 +97,7 @@ namespace FakeBasketballAssociation.Client.Repository
             return dtoList;
         }
 
-        // for local api check only
+        // get players from db
         public async Task<List<Player>> GetPlayers()
         {
             using (var http = new HttpClient())
@@ -97,6 +107,26 @@ namespace FakeBasketballAssociation.Client.Repository
                 var players = JsonConvert.DeserializeObject<List<Player>>(json);
                 return players;
             }
+        }
+
+        public async Task CreatePlayer(PlayerCreateDTO player)
+        {
+            var response = await httpService.Post($"{url}", player);
+            if (!response.Success)
+            {
+                throw new ApplicationException(await response.GetBody());
+            }
+        }
+
+        public async Task DeletePlayer(PlayerDTO player)
+        {
+            var response = await httpService.Delete($"{url}/{player.NbaId}");
+            if (!response.Success)
+            {
+                throw new ApplicationException(await response.GetBody());
+            }
+            Console.WriteLine("ok, done deleting");
+
         }
     }
 }

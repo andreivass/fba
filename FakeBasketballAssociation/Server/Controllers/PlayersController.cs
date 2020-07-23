@@ -14,7 +14,6 @@ namespace FakeBasketballAssociation.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
     public class PlayersController : Controller
     {
         private ApplicationDbContext _context;
@@ -62,6 +61,50 @@ namespace FakeBasketballAssociation.Server.Controllers
             }
 
             return Ok(player);
+        }
+
+        /*[HttpDelete]
+        [Consumes("application/json")]
+        [ProducesResponseType(201, Type = typeof(Player))]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public IActionResult DeletePlayer([FromBody] Player player)
+        {
+            var dbPlayer = _context.Players.Where(p => p.NbaId.Equals(player.NbaId)).FirstOrDefault();
+            if (dbPlayer == null)
+                return BadRequest(ModelState);
+            if (!_context.Players.Any(p => p.NbaId.Equals(dbPlayer.NbaId)))
+            {
+                ModelState.AddModelError("", $"Player with Id {dbPlayer.NbaId} does not exists");
+                return StatusCode(422, ModelState);
+            }
+            else
+            {
+                _context.Players.Remove(dbPlayer);
+                _context.SaveChanges();
+            }
+
+            return Ok();
+        }*/
+        [HttpDelete("{playerId}")]
+        [ProducesResponseType(201, Type = typeof(Player))]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public IActionResult DeletePlayer(string playerId)
+        {
+            var dbPlayer = _context.Players.Where(p => p.NbaId.Equals(playerId)).FirstOrDefault();
+            if (dbPlayer == null)
+                return BadRequest(ModelState);
+            if (!_context.Players.Any(p => p.NbaId.Equals(dbPlayer.NbaId)))
+            {
+                ModelState.AddModelError("", $"Player with Id {dbPlayer.NbaId} does not exists");
+                return StatusCode(422, ModelState);
+            }
+            else
+            {
+                _context.Players.Remove(dbPlayer);
+                _context.SaveChanges();
+            }
+
+            return Ok();
         }
 
     }
