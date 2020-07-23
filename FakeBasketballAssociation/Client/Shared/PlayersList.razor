@@ -37,6 +37,7 @@ else
     public bool VoteLocked { get; set; } = false;
     //[Parameter] public bool VoteLocked { get; set; }
     private string CurrentUser;
+    [Parameter] public EventCallback ChangeVoteLock { get; set; }
 
 
     private async Task VotePlayer(PlayerDTO Player)
@@ -50,6 +51,8 @@ else
         await displayMessage.DisplaySuccessMessage("Vote posted!");
         Player.VotesTemp++;
         VoteLocked = true;
+        //testing
+        await ChangeVoteLock.InvokeAsync(true);
     }
 
     private async Task DeletePlayer(PlayerDTO Player)
@@ -83,7 +86,12 @@ else
 
             var votesCount = await votesRepo.GetUserVotes(CurrentUser);
 
-            if (votesCount > 0) VoteLocked = true;
+            if (votesCount > 0)
+            {
+                VoteLocked = true;
+                //testing
+                await ChangeVoteLock.InvokeAsync(true);
+            }
 
             Console.WriteLine($"votesCount: {votesCount}");
         }

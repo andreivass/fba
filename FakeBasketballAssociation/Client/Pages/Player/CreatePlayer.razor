@@ -1,6 +1,7 @@
 ﻿@page "/createplayer"
 @inject FakeBasketballAssociation.Client.Repository.IPlayerRepository playersRepo
 @inject NavigationManager navigationManager
+@attribute [Authorize(Roles = "Admin")]
 
 <h3>Add Player to voting</h3>
 
