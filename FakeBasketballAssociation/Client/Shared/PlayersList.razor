@@ -14,7 +14,6 @@ else if (PlayersAll.Count == 0)
 }
 else
 {
-
     <div class="row row-cols-1 row-cols-md-3">
 
         @foreach (var item in PlayersAll)
@@ -32,19 +31,20 @@ else
 
 
 @code {
-    [CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; }
+    //[CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; }
     [Parameter] public List<PlayerDTO> PlayersAll { get; set; }
     private List<Vote> Votes;
     public bool VoteLocked { get; set; } = false;
+    //[Parameter] public bool VoteLocked { get; set; }
+    private string CurrentUser;
 
 
     private async Task VotePlayer(PlayerDTO Player)
     {
-        var newVote = new Vote()
+        var newVote = new VoteCreateDTO()
         {
             PlayerId = Player.PlayerId,
-            // dummy id, backend will replace with correct
-            ApplicationUserId = new Guid("ace8d4da-aa66-4000-a508-59ceda17573b")
+            UserName = CurrentUser
         };
         await votesRepo.PostVote(newVote);
         await displayMessage.DisplaySuccessMessage("Vote posted!");
@@ -71,5 +71,22 @@ else
     private void RemovePlayerFromList(PlayerDTO Player)
     {
         PlayersAll.Remove(Player);
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var userState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        CurrentUser = userState.User.Identity.Name;
+        if (CurrentUser != null)
+        {
+            Console.WriteLine($"currentuser: {CurrentUser}");
+
+            var votesCount = await votesRepo.GetUserVotes(CurrentUser);
+
+            if (votesCount > 0) VoteLocked = true;
+
+            Console.WriteLine($"votesCount: {votesCount}");
+        }
+
     }
 }

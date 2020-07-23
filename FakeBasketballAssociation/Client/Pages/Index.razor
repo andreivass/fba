@@ -6,10 +6,18 @@
 
 <h2>Welcome to the FBA - the Fake Basketball Association</h2>
 
-<h4>Choose wisely, only one vote for you!</h4>
+@*@if (VoteLockedText)
+{
+    <h4>You have already voted, thanks! Come back next year.</h4>
+} else
+{
+    <h4>Choose wisely, only one vote for you!</h4>
+}*@
+
+
 
 <div class="container">
-    <PlayersList PlayersAll="@SortedPlayerDTOs" />
+    <PlayersList PlayersAll="@SortedPlayerDTOs"/>
 </div>
 
 @code{
@@ -17,6 +25,7 @@
     private List<PlayerDTO> PlayerDTOs;
     private List<PlayerDTO> SortedPlayerDTOs;
     private List<Vote> Votes;
+    //[Parameter] public bool VoteLockedText { get; set; } = true;
 
     protected async override Task OnInitializedAsync()
     {

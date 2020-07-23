@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FakeBasketballAssociation.Server.Data;
 using FakeBasketballAssociation.Shared.Entities;
+using FakeBasketballAssociation.Shared.DTOs;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -47,7 +48,40 @@ namespace FakeBasketballAssociation.Server.Controllers
         [ProducesResponseType(201, Type = typeof(Vote))]
         [Produces("application/json")]
         [Consumes("application/json")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult PostVote([FromBody] VoteCreateDTO voteDTO)
+        {
+            if (voteDTO == null)
+                return BadRequest(ModelState);
+
+            if (!ModelState.IsValid)
+                return StatusCode(404, ModelState);
+
+            var userName = voteDTO.UserName;
+
+            if (userName != null)
+            {
+                var userId = _context.AppUsers.Where(u => u.UserName == userName).FirstOrDefault().Id;
+                var voteToCreate = new Vote()
+                {
+                    PlayerId = voteDTO.PlayerId,
+                    ApplicationUserId = new Guid(userId)
+                };
+                _context.Votes.Add(voteToCreate);
+                _context.AppUsers.Where(p => p.Id == userId).FirstOrDefault().VotesUsed++;
+                _context.SaveChanges();
+
+                return Ok(voteToCreate);
+            }
+            return BadRequest();
+        }
+
+        /*//api/votes
+        [HttpPost]
+        [ProducesResponseType(201, Type = typeof(Vote))]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult PostVote([FromBody] Vote voteToCreate)
         {
             if (voteToCreate == null)
@@ -57,12 +91,26 @@ namespace FakeBasketballAssociation.Server.Controllers
                 return StatusCode(404, ModelState);
 
             var userId = User.Identity.GetUserId();
-            voteToCreate.ApplicationUserId = new Guid(userId);
+            
+            if (userId != null)
+            {
+                voteToCreate.ApplicationUserId = new Guid(userId);
+                _context.Votes.Add(voteToCreate);
+                //_context.AppUsers.Where(p => p.Id == userId).FirstOrDefault().VotesUsed++;
+                _context.SaveChanges();
 
-            _context.Votes.Add(voteToCreate);
-            _context.SaveChanges();
+                return Ok(voteToCreate);
+            }
+            return BadRequest();
+        }*/
 
-            return Ok(voteToCreate);
+        //api/votes/uservotes/5
+        [HttpGet("uservotes/{userId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public ActionResult GetUserVotes(string userId)
+        {
+            var user = _context.AppUsers.Where(au => au.Email.Equals(userId)).FirstOrDefault();
+            return Ok(user.VotesUsed);
         }
     }
 }

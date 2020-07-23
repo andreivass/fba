@@ -3,40 +3,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeBasketballAssociation.Shared.Entities;
+using FakeBasketballAssociation.Shared.DTOs;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Text;
-//using System.Text.Json;
+using FakeBasketballAssociation.Client.Helpers;
 
 namespace FakeBasketballAssociation.Client.Repository
 {
     public class VoteRepository : IVoteRepository
     {
-        private readonly string localApiURL = "https://localhost:44359/";
+        private readonly IHttpService httpService;
+        private readonly string url = "api/votes";
+
+        public VoteRepository(IHttpService httpServe)
+        {
+            httpService = httpServe;
+        }
 
         public async Task<List<Vote>> GetVotes()
         {
-            using (var http = new HttpClient())
+            var httpResponse = await httpService.Get<List<Vote>>(url);
+            if (!httpResponse.Success)
             {
-                var uri = new Uri(localApiURL + "api/votes");
-                string json = await http.GetStringAsync(uri);
-                var votes = JsonConvert.DeserializeObject<List<Vote>>(json);
-                return votes;
+                throw new ApplicationException(await httpResponse.GetBody());
             }
+            return httpResponse.Response;
         }
 
-        public async Task<Vote> PostVote(Vote vote)
+        public async Task PostVote(VoteCreateDTO vote)
         {
-            Console.WriteLine("userid: ", vote.ApplicationUser, "playerId: ", vote.PlayerId);
-            using (var http = new HttpClient())
+            var response = await httpService.Post($"{url}", vote);
+            if (!response.Success)
             {
-                //var dataJson = JsonSerializer.Serialize(vote);
-                var dataJson = JsonConvert.SerializeObject(vote);
-                var stringContent = new StringContent(dataJson, Encoding.UTF8, "application/json");
-                var response = await http.PostAsync(localApiURL + "api/votes", stringContent);
+                throw new ApplicationException(await response.GetBody());
             }
-
+        }
+        /*public async Task<Vote> PostVote(Vote vote)
+        {
+            var response = await httpService.Post($"{url}", vote);
+            if (!response.Success)
+            {
+                throw new ApplicationException(await response.GetBody());
+            }
             return vote;
+        }*/
+
+        public async Task<int> GetUserVotes(string userName)
+        {
+            var httpResponse = await httpService.Get<int>($"{url}/uservotes/{userName}");
+            if (!httpResponse.Success)
+            {
+                throw new ApplicationException(await httpResponse.GetBody());
+            }
+            return httpResponse.Response;
         }
     }
 }

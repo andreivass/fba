@@ -49,6 +49,7 @@ namespace FakeBasketballAssociation.Client
             );
 
             services.AddScoped<TokenRenewer>();
+
         }
     }
 }

@@ -12,9 +12,9 @@ namespace FakeBasketballAssociation.Client.Repository
         private readonly IHttpService httpService;
         private readonly string url = "api/users";
 
-        public UsersRepository(IHttpService httpService)
+        public UsersRepository(IHttpService httpServ)
         {
-            this.httpService = httpService;
+            httpService = httpServ;
         }
 
         public async Task<List<RoleDTO>> GetRoles()

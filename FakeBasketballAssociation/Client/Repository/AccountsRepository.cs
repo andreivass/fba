@@ -20,36 +20,30 @@ namespace FakeBasketballAssociation.Client.Repository
         public async Task<UserToken> Register(UserInfo userInfo)
         {
             var httpResponse = await httpService.Post<UserInfo, UserToken>($"{baseURL}/create", userInfo);
-
             if (!httpResponse.Success)
             {
                 throw new ApplicationException(await httpResponse.GetBody());
             }
-
             return httpResponse.Response;
         }
 
         public async Task<UserToken> Login(UserInfo userInfo)
         {
             var httpResponse = await httpService.Post<UserInfo, UserToken>($"{baseURL}/login", userInfo);
-
             if (!httpResponse.Success)
             {
                 throw new ApplicationException(await httpResponse.GetBody());
             }
-
             return httpResponse.Response;
         }
 
         public async Task<UserToken> RenewToken()
         {
             var response = await httpService.Get<UserToken>($"{baseURL}/RenewToken");
-
             if (!response.Success)
             {
                 throw new ApplicationException(await response.GetBody());
             }
-
             return response.Response;
         }
     }

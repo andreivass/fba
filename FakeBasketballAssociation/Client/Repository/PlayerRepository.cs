@@ -16,12 +16,11 @@ namespace FakeBasketballAssociation.Client.Repository
         private readonly IHttpService httpService;
         private readonly string url = "api/players";
 
-        private readonly string localApiURL = "https://localhost:44359/";
         private readonly string nbaNameApiURL = "https://data.nba.net/json/bios/player_";
         private readonly string nbaStatsApiURL = "https://data.nba.net/10s/prod/v1/2019/players/";
         public PlayerRepository(IHttpService httpServ)
         {
-            this.httpService = httpServ;
+            httpService = httpServ;
         }
         // populate nba player stats by nbaId from nba stats API
         public async Task<PlayerDTO> GetNbaPlayerStats(PlayerDTO player)
@@ -100,33 +99,30 @@ namespace FakeBasketballAssociation.Client.Repository
         // get players from db
         public async Task<List<Player>> GetPlayers()
         {
-            using (var http = new HttpClient())
+            var httpResponse = await httpService.Get<List<Player>>($"{url}");
+            if (!httpResponse.Success)
             {
-                var uri = new Uri(localApiURL + "api/players");
-                string json = await http.GetStringAsync(uri);
-                var players = JsonConvert.DeserializeObject<List<Player>>(json);
-                return players;
+                throw new ApplicationException(await httpResponse.GetBody());
             }
+            return httpResponse.Response;
         }
 
         public async Task CreatePlayer(PlayerCreateDTO player)
         {
-            var response = await httpService.Post($"{url}", player);
-            if (!response.Success)
+            var httpResponse = await httpService.Post($"{url}", player);
+            if (!httpResponse.Success)
             {
-                throw new ApplicationException(await response.GetBody());
+                throw new ApplicationException(await httpResponse.GetBody());
             }
         }
 
         public async Task DeletePlayer(PlayerDTO player)
         {
-            var response = await httpService.Delete($"{url}/{player.NbaId}");
-            if (!response.Success)
+            var httpResponse = await httpService.Delete($"{url}/{player.NbaId}");
+            if (!httpResponse.Success)
             {
-                throw new ApplicationException(await response.GetBody());
+                throw new ApplicationException(await httpResponse.GetBody());
             }
-            Console.WriteLine("ok, done deleting");
-
         }
     }
 }
