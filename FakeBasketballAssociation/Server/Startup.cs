@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System;
 using FakeBasketballAssociation.Server.Services;
+using Newtonsoft.Json;
 
 namespace FakeBasketballAssociation.Server
 {
@@ -39,7 +40,11 @@ namespace FakeBasketballAssociation.Server
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
+
             services.AddRazorPages();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -58,6 +63,7 @@ namespace FakeBasketballAssociation.Server
             services.AddScoped<IPlayerRepo, PlayersRepo>();
             services.AddScoped<IVoteRepo, VoteRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

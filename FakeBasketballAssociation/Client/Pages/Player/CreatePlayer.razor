@@ -1,6 +1,7 @@
 ﻿@page "/createplayer"
 @inject FakeBasketballAssociation.Client.Repository.IPlayerRepository playersRepo
 @inject NavigationManager navigationManager
+@inject IDisplayMessage displayMessage
 @attribute [Authorize(Roles = "Admin")]
 
 <h3>Add Player to voting</h3>
@@ -22,7 +23,16 @@
 
     private async Task AddPlayer()
     {
-        await playersRepo.CreatePlayer(PlayerNew);
-        navigationManager.NavigateTo("/index");
+        try
+        {
+            await playersRepo.CreatePlayer(PlayerNew);
+            navigationManager.NavigateTo("/index");
+        }
+        catch (Exception)
+        {
+
+            await displayMessage.DisplayErrorMessage($"Player already in voting list.");
+        }
+
     }
 }

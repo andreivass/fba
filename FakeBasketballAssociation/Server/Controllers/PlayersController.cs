@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FakeBasketballAssociation.Server.Data;
 using FakeBasketballAssociation.Server.Services;
+using FakeBasketballAssociation.Shared.DTOs;
 using FakeBasketballAssociation.Shared.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -82,6 +83,20 @@ namespace FakeBasketballAssociation.Server.Controllers
                 _playerRepo.DeletePlayer(dbPlayer);
             }
             return Ok();
+        }
+
+        //api/nbastats
+        [HttpGet("nbastats")]
+        [Produces("application/json")]
+        [ProducesResponseType(201, Type = typeof(List<PlayerDTO>))]
+        public async Task<ActionResult<List<PlayerDTO>>> GetPlayerNbaStats()
+        {
+            var players = await _playerRepo.GetPlayersWithNbaStats();
+            if (players == null)
+            {
+                return NotFound();
+            }
+            return Ok(players);
         }
     }
 }
