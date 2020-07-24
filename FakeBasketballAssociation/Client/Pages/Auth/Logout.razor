@@ -5,10 +5,12 @@
 
 @using FakeBasketballAssociation.Client.Auth
 
-<text>Login out...</text>
+<text>Logging out...</text>
 
-@code{ protected async override Task OnInitializedAsync()
-            {
-                await loginService.Logout();
-                navigationManager.NavigateTo("");
-            } }
+@code{ 
+    protected async override Task OnInitializedAsync()
+        {
+            await loginService.Logout();
+            navigationManager.NavigateTo("");
+        } 
+}

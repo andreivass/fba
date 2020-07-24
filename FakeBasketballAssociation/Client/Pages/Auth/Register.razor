@@ -10,7 +10,6 @@
 
 <EditForm Model="userInfo" OnValidSubmit="CreateUser">
     <DataAnnotationsValidator />
-
     <div class="form-group">
         <label>Email:</label>
         <div>
@@ -28,16 +27,15 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Register</button>
-
 </EditForm>
 
 @code { 
     private UserInfo userInfo = new UserInfo();
 
-            private async Task CreateUser()
-            {
-                var userToken = await accountsRepository.Register(userInfo);
-                await loginService.Login(userToken);
-                navigationManager.NavigateTo("");
-            } 
-    }
+    private async Task CreateUser()
+    {
+        var userToken = await accountsRepository.Register(userInfo);
+        await loginService.Login(userToken);
+        navigationManager.NavigateTo("");
+    } 
+}

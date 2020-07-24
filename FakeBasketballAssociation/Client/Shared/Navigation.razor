@@ -1,0 +1,20 @@
+﻿<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <a class="navbar-brand" href="index">FBA</a>
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <NavLink class="nav-link" href="users">
+                        <span>Users</span>
+                    </NavLink>
+                    <NavLink class="nav-link" href="createplayer">
+                        <span>Add Players</span>
+                    </NavLink>
+                </ul>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+    <div class="px-4 auth">
+        <LoginLinks />
+    </div>
+</nav>

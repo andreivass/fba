@@ -2,7 +2,6 @@
 @inject IUsersRepository usersRepository
 @attribute [Authorize(Roles = "Admin")]
 
-
 <Pagination CurrentPage="@paginationDTO.Page" SelectedPage="SelectedPage"
             TotalAmountPages="totalAmountOfPages"></Pagination>
 
@@ -22,7 +21,7 @@
                 {
                 <tr>
                     <td>
-                        <a href="/users/edit/@user.UserId" class="btn btn-success">Edit</a>
+                        <a href="/users/edit/@user.UserId" class="btn btn-dark">Edit</a>
                     </td>
                     <td>
                         @user.Email

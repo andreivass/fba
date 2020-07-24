@@ -8,7 +8,7 @@
 
 <h3>Login</h3>
 
-<EditForm Model="userInfo" OnValidSubmit="CreateUser">
+<EditForm Model="userInfo" OnValidSubmit="LoginUser">
     <DataAnnotationsValidator />
 
     <div class="form-group">
@@ -31,11 +31,13 @@
 
 </EditForm>
 
-@code { private UserInfo userInfo = new UserInfo();
+@code { 
+    private UserInfo userInfo = new UserInfo();
 
-            private async Task CreateUser()
-            {
-                var userToken = await accountsRepository.Login(userInfo);
-                await loginService.Login(userToken);
-                navigationManager.NavigateTo("");
-            } }
+    private async Task LoginUser()
+    {
+        var userToken = await accountsRepository.Login(userInfo);
+        await loginService.Login(userToken);
+        navigationManager.NavigateTo("");
+    } 
+}
