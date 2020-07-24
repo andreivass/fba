@@ -1,8 +1,8 @@
 ﻿@page "/register"
-
 @inject IAccountsRepository accountsRepository
 @inject NavigationManager navigationManager
 @inject ILoginService loginService
+@inject IDisplayMessage displayMessage
 
 @using FakeBasketballAssociation.Client.Auth
 
@@ -34,8 +34,17 @@
 
     private async Task CreateUser()
     {
-        var userToken = await accountsRepository.Register(userInfo);
-        await loginService.Login(userToken);
-        navigationManager.NavigateTo("");
+        try
+        {
+            var userToken = await accountsRepository.Register(userInfo);
+            await loginService.Login(userToken);
+            navigationManager.NavigateTo("");
+        }
+        catch (Exception)
+        {
+
+            await displayMessage.DisplayErrorMessage($"Sorry, usarname {userInfo.Email} already exists, try another.");
+        }
+
     } 
 }
