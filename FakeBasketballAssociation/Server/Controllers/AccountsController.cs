@@ -73,7 +73,6 @@ namespace FakeBasketballAssociation.Server.Controllers
             {
                 Email = HttpContext.User.Identity.Name
             };
-
             return await BuildToken(userInfo);
         }
 

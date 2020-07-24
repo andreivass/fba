@@ -47,7 +47,7 @@
         SortedPlayerDTOs = PlayerDTOs.OrderByDescending(p => p.VotesTemp).ToList();
     }
 
-    private async Task ChangeVoteLock()
+    private void ChangeVoteLock()
     {
         VoteLockedText = !VoteLockedText;
     }

@@ -14,12 +14,10 @@
             <ValidationMessage For="@(() => PlayerNew.NbaId)" />
         </div>
     </div>
-
     <button class="btn btn-dark" type="submit">Add player</button>
 </EditForm>
 
 @code {
-    //public string NbaId { get; set; }
     private PlayerCreateDTO PlayerNew { get; set; } = new PlayerCreateDTO();
 
     private async Task AddPlayer()
@@ -27,5 +25,4 @@
         await playersRepo.CreatePlayer(PlayerNew);
         navigationManager.NavigateTo("/index");
     }
-
 }

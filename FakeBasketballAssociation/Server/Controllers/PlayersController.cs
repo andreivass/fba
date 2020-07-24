@@ -63,6 +63,7 @@ namespace FakeBasketballAssociation.Server.Controllers
             return Ok(player);
         }
 
+        //api/players
         [HttpDelete("{nbaId}")]
         [ProducesResponseType(201, Type = typeof(Player))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]

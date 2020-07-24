@@ -39,15 +39,6 @@ namespace FakeBasketballAssociation.Client.Repository
                 throw new ApplicationException(await response.GetBody());
             }
         }
-        /*public async Task<Vote> PostVote(Vote vote)
-        {
-            var response = await httpService.Post($"{url}", vote);
-            if (!response.Success)
-            {
-                throw new ApplicationException(await response.GetBody());
-            }
-            return vote;
-        }*/
 
         public async Task<int> GetUserVotes(string userName)
         {

@@ -29,16 +29,11 @@ else
     </div>
 }
 
-
 @code {
-    //[CascadingParameter] private Task<AuthenticationState> AuthenticationState { get; set; }
     [Parameter] public List<PlayerDTO> PlayersAll { get; set; }
-    private List<Vote> Votes;
-    public bool VoteLocked { get; set; } = false;
-    //[Parameter] public bool VoteLocked { get; set; }
-    private string CurrentUser;
     [Parameter] public EventCallback ChangeVoteLock { get; set; }
-
+    private string CurrentUser;
+    public bool VoteLocked { get; set; } = false;
 
     private async Task VotePlayer(PlayerDTO Player)
     {
@@ -51,7 +46,6 @@ else
         await displayMessage.DisplaySuccessMessage("Vote posted!");
         Player.VotesTemp++;
         VoteLocked = true;
-        //testing
         await ChangeVoteLock.InvokeAsync(true);
     }
 
@@ -65,7 +59,6 @@ else
         {
             await playersRepo.DeletePlayer(Player);
             await displayMessage.DisplaySuccessMessage($"Too bad you didn´t like {Player.FirstName}, he´s gone from the list.");
-            //navigationManager.NavigateTo("/index");
             RemovePlayerFromList(Player);
         }
 
@@ -89,7 +82,6 @@ else
             if (votesCount > 0)
             {
                 VoteLocked = true;
-                //testing
                 await ChangeVoteLock.InvokeAsync(true);
             }
 

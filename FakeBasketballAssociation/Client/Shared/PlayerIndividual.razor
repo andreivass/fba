@@ -1,6 +1,4 @@
-﻿
-
-    <div class="card" style="width: 18rem;">
+﻿    <div class="card" style="width: 18rem;">
         <img src="@imgURL" class="card-img-top" alt="@PlayerOne.FirstName">
         <div class="card-body">
             <h5 class="card-title">@PlayerOne.FirstName @PlayerOne.LastName</h5>
@@ -11,19 +9,15 @@
             <p class="card-text">Blocks - @PlayerOne.Bpg</p>
             <p class="card-text">Steals - @PlayerOne.Spg</p>
             <p class="card-text">Field goal - @PlayerOne.Fgp %</p>
-
             <p class="card-text">MVP Votes: @PlayerOne.VotesTemp</p>
             <AuthorizeView>
                 <Authorized>
-                    
                     <button disabled="@VoteLocked" class="btn btn-primary" href="" @onclick="@(() => VotePlayer.InvokeAsync(PlayerOne))">Vote</button>
                 </Authorized>
                 <NotAuthorized>
                     Log in to vote
                 </NotAuthorized>
             </AuthorizeView>
-            
-
             <AuthorizeView Roles="Admin">
                 <Authorized>
                     <button class="btn btn-danger" href="" @onclick="@(() => DeletePlayer.InvokeAsync(PlayerOne))">Delete</button>
@@ -32,16 +26,11 @@
         </div>
     </div>
 
- 
-
 @code {
     [Parameter] public PlayerDTO PlayerOne { get; set; }
     [Parameter] public bool VoteLocked { get; set; }
-    //private PlayerDTO PlayerOneDTO { get; set; }
     [Parameter] public EventCallback<PlayerDTO> VotePlayer { get; set; }
     [Parameter] public EventCallback<PlayerDTO> DeletePlayer { get; set; }
-
-    // TODO: fix VotePlayer or auth? Possible also to move here, but at least 1 EventCallback?
 
     private string imgURL = string.Empty;
 

@@ -30,10 +30,6 @@ namespace FakeBasketballAssociation.Client.Repository
                 var uri = new Uri(nbaStatsApiURL + player.NbaId + "_profile.json");
                 string json = await http.GetStringAsync(uri);
 
-                // before API change/break
-                //var statsJsonIncomplete = json.Split("latest")[1].Split("careerSummary")[0].Substring(2);
-                //var statsJson = statsJsonIncomplete.Remove(statsJsonIncomplete.Length -2);
-
                 // do some bad magic string stuff, fix later if time left
                 var statsJsonIncomplete = json.Split("teams")[1].Split("total")[0].Substring(3);
                 var statsJson = statsJsonIncomplete.Remove(statsJsonIncomplete.Length -3);

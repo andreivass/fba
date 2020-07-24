@@ -10,7 +10,6 @@ namespace FakeBasketballAssociation.Client.Repository
     public interface IVoteRepository
     {
         Task<List<Vote>> GetVotes();
-        //Task<Vote> PostVote(Vote vote);
         Task PostVote(VoteCreateDTO vote);
         Task<int> GetUserVotes(string userName);
     }

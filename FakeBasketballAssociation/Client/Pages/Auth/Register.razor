@@ -17,7 +17,6 @@
             <ValidationMessage For="@(() => userInfo.Email)" />
         </div>
     </div>
-
     <div class="form-group">
         <label>Password:</label>
         <div>
@@ -25,7 +24,6 @@
             <ValidationMessage For="@(() => userInfo.Password)" />
         </div>
     </div>
-
     <button type="submit" class="btn btn-primary">Register</button>
 </EditForm>
 
@@ -45,6 +43,5 @@
 
             await displayMessage.DisplayErrorMessage($"Sorry, usarname {userInfo.Email} already exists, try another.");
         }
-
     } 
 }
