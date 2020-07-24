@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using FakeBasketballAssociation.Server.Services;
 
 namespace FakeBasketballAssociation.Server.Controllers
 {
@@ -17,25 +18,27 @@ namespace FakeBasketballAssociation.Server.Controllers
     [ApiController]
     public class VotesController : Controller
     {
-        private ApplicationDbContext _context;
+        private IVoteRepo _voteRepo;
+        private IUserRepo _userRepo;
 
-        public VotesController(ApplicationDbContext context)
+        public VotesController(IVoteRepo voteRepo, IUserRepo userRepo)
         {
-            _context = context;
+            _voteRepo = voteRepo;
+            _userRepo = userRepo;
         }
 
         //api/votes
         [HttpGet]
         public ActionResult Index()
         {
-            return Ok(_context.Votes);
+            return Ok(_voteRepo.GetVotes());
         }
 
         //api/votes/5
         [HttpGet("{id}")]
         public ActionResult GetVote(int id)
         {
-            var vote = _context.Votes.Find(id);
+            var vote = _voteRepo.GetVote(id);
             if (vote == null)
             {
                 return NotFound();
@@ -61,56 +64,26 @@ namespace FakeBasketballAssociation.Server.Controllers
 
             if (userName != null)
             {
-                var userId = _context.AppUsers.Where(u => u.UserName == userName).FirstOrDefault().Id;
+                var userId = _userRepo.GetUserId(userName);
                 var voteToCreate = new Vote()
                 {
                     PlayerId = voteDTO.PlayerId,
                     ApplicationUserId = new Guid(userId)
                 };
-                _context.Votes.Add(voteToCreate);
-                _context.AppUsers.Where(p => p.Id == userId).FirstOrDefault().VotesUsed++;
-                _context.SaveChanges();
+                _voteRepo.AddVote(voteToCreate);
+                _userRepo.AddToUserVoteCount(userId);
 
                 return Ok(voteToCreate);
             }
             return BadRequest();
         }
 
-        /*//api/votes
-        [HttpPost]
-        [ProducesResponseType(201, Type = typeof(Vote))]
-        [Produces("application/json")]
-        [Consumes("application/json")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public IActionResult PostVote([FromBody] Vote voteToCreate)
-        {
-            if (voteToCreate == null)
-                return BadRequest(ModelState);
-
-            if (!ModelState.IsValid)
-                return StatusCode(404, ModelState);
-
-            var userId = User.Identity.GetUserId();
-            
-            if (userId != null)
-            {
-                voteToCreate.ApplicationUserId = new Guid(userId);
-                _context.Votes.Add(voteToCreate);
-                //_context.AppUsers.Where(p => p.Id == userId).FirstOrDefault().VotesUsed++;
-                _context.SaveChanges();
-
-                return Ok(voteToCreate);
-            }
-            return BadRequest();
-        }*/
-
         //api/votes/uservotes/5
-        [HttpGet("uservotes/{userId}")]
+        [HttpGet("uservotes/{userName}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public ActionResult GetUserVotes(string userId)
+        public ActionResult GetUserVotes(string userName)
         {
-            var user = _context.AppUsers.Where(au => au.Email.Equals(userId)).FirstOrDefault();
-            return Ok(user.VotesUsed);
+            return Ok(_userRepo.GetUserVotesCount(userName));
         }
     }
 }

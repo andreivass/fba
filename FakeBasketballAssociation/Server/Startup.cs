@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System;
+using FakeBasketballAssociation.Server.Services;
 
 namespace FakeBasketballAssociation.Server
 {
@@ -59,6 +60,9 @@ namespace FakeBasketballAssociation.Server
                     ClockSkew = TimeSpan.Zero
                 });
 
+            services.AddScoped<IPlayerRepo, PlayersRepo>();
+            services.AddScoped<IVoteRepo, VoteRepo>();
+            services.AddScoped<IUserRepo, UserRepo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

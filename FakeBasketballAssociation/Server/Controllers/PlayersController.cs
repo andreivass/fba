@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeBasketballAssociation.Server.Data;
+using FakeBasketballAssociation.Server.Services;
 using FakeBasketballAssociation.Shared.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -16,24 +17,24 @@ namespace FakeBasketballAssociation.Server.Controllers
     [ApiController]
     public class PlayersController : Controller
     {
-        private ApplicationDbContext _context;
-        public PlayersController(ApplicationDbContext context)
+        private IPlayerRepo _playerRepo;
+        public PlayersController(IPlayerRepo playerRepo)
         {
-            _context = context;
+            _playerRepo = playerRepo;
         }
 
         //api/players
         [HttpGet]
         public IActionResult GetPlayers()
         {
-            return Ok(_context.Players);
+            return Ok(_playerRepo.GetPlayers());
         }
 
         //api/players/5
-        [HttpGet("{id}")]
-        public ActionResult GetPlayer(int id)
+        [HttpGet("{nbaId}")]
+        public ActionResult GetPlayer(string nbaId)
         {
-            var player = _context.Players.Find(id);
+            var player = _playerRepo.GetPlayerNbaId(nbaId);
             if (player == null)
             {
                 return NotFound();
@@ -51,61 +52,35 @@ namespace FakeBasketballAssociation.Server.Controllers
         {
             if (player == null)
                 return BadRequest(ModelState);
-            if (_context.Players.Any(p => p.NbaId.Equals(player.NbaId))){
+            if (_playerRepo.Exists(player))
+            {
                 ModelState.AddModelError("", $"Player with nbaId {player.NbaId} already exists");
                 return StatusCode(422, ModelState);
             } else
             {
-                _context.Players.Add(player);
-                _context.SaveChanges();
+                _playerRepo.PostPlayer(player);
             }
-
             return Ok(player);
         }
 
-        /*[HttpDelete]
-        [Consumes("application/json")]
-        [ProducesResponseType(201, Type = typeof(Player))]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public IActionResult DeletePlayer([FromBody] Player player)
-        {
-            var dbPlayer = _context.Players.Where(p => p.NbaId.Equals(player.NbaId)).FirstOrDefault();
-            if (dbPlayer == null)
-                return BadRequest(ModelState);
-            if (!_context.Players.Any(p => p.NbaId.Equals(dbPlayer.NbaId)))
-            {
-                ModelState.AddModelError("", $"Player with Id {dbPlayer.NbaId} does not exists");
-                return StatusCode(422, ModelState);
-            }
-            else
-            {
-                _context.Players.Remove(dbPlayer);
-                _context.SaveChanges();
-            }
-
-            return Ok();
-        }*/
-        [HttpDelete("{playerId}")]
+        [HttpDelete("{nbaId}")]
         [ProducesResponseType(201, Type = typeof(Player))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public IActionResult DeletePlayer(string playerId)
+        public IActionResult DeletePlayer(string nbaId)
         {
-            var dbPlayer = _context.Players.Where(p => p.NbaId.Equals(playerId)).FirstOrDefault();
+            var dbPlayer = _playerRepo.GetPlayerNbaId(nbaId);
             if (dbPlayer == null)
                 return BadRequest(ModelState);
-            if (!_context.Players.Any(p => p.NbaId.Equals(dbPlayer.NbaId)))
+            if (!_playerRepo.Exists(dbPlayer))
             {
                 ModelState.AddModelError("", $"Player with Id {dbPlayer.NbaId} does not exists");
                 return StatusCode(422, ModelState);
             }
             else
             {
-                _context.Players.Remove(dbPlayer);
-                _context.SaveChanges();
+                _playerRepo.DeletePlayer(dbPlayer);
             }
-
             return Ok();
         }
-
     }
 }
